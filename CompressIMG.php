@@ -34,11 +34,9 @@ class CompressIMG extends Component
 
         if (is_file($fullPath)) {
             return self::convert($fullPath, $r_width, $r_height);
-        } else {
-            return false;
         }
-
-        die($fullPath);
+        return false;
+        
     }
 
     /**
