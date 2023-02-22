@@ -24,19 +24,20 @@ class CompressIMG extends Component
      * @param $path
      * @param false $r_width
      * @param false $r_height
+     * @param bool $quality
      * @return string|string[]|null
      */
-    public function cache_as_webp($path, $r_width = false, $r_height = false)
+    public function cache_as_webp($path, $r_width = false, $r_height = false, $quality = false)
     {
 
         $path = $this->addSlash($path);
         $fullPath = \Yii::getAlias('@webroot') . $path;
 
         if (is_file($fullPath)) {
-            return self::convert($fullPath, $r_width, $r_height);
+            return self::convert($fullPath, $r_width, $r_height, $quality);
         }
         return false;
-        
+
     }
 
     /**
@@ -45,9 +46,10 @@ class CompressIMG extends Component
      * @param $path
      * @param $r_width
      * @param $r_height
+     * @param $quality
      * @return string|string[]|null
      */
-    private function convert($path, $r_width, $r_height)
+    private function convert($path, $r_width, $r_height, $quality)
     {
         $info = $this->getImageInfo($path);
         $width = $info[0];
@@ -84,9 +86,9 @@ class CompressIMG extends Component
                 }
 
             }
-            $this->setWebp($newImage, $width, $height, $newWidth, $newHeight, $pathToCache);
+            $this->setWebp($newImage, $width, $height, $newWidth, $newHeight, $pathToCache, $quality);
 
-            return $pathToCache;
+            return $this->cleanUrl($pathToCache);
 
         }
 
@@ -207,11 +209,13 @@ class CompressIMG extends Component
      * @param $newWidth
      * @param $newHeight
      * @param $pathToCache
+     * @param $quality
      */
-    private function setWebp($newImage, $width, $height, $newWidth, $newHeight, $pathToCache)
+    private function setWebp($newImage, $width, $height, $newWidth, $newHeight, $pathToCache, $quality)
     {
+        if (!$quality) $quality = $this->quality;
         $tmpImage = $this->formateIMG($newImage, $width, $height, $newWidth, $newHeight);
-        imagewebp($tmpImage, $pathToCache, $this->quality);
+        imagewebp($tmpImage, $pathToCache, $quality);
         imagedestroy($tmpImage);
     }
 }
