@@ -81,7 +81,7 @@ class CompressIMG extends Component
             if (file_exists($pathToCache)) {
 
                 # check cache
-                if (!$this->checkTimestamp($pathToCache)) {
+                if (!$this->checkTimestamp($pathToCache) && $this->checkResize($path, $newHeight, $newWidth)) {
                     return $this->cleanUrl($pathToCache);
                 }
 
@@ -93,6 +93,28 @@ class CompressIMG extends Component
         }
 
         return $this->cleanUrl($path);
+    }
+
+
+    /**
+     * Проверка на ресайз
+     * 
+     * @param $path
+     * @param $newHeight
+     * @param $newWidth
+     * @return bool
+     */
+    private function checkResize($path, $newHeight, $newWidth)
+    {
+        $info = $this->getImageInfo($path);
+        $width = $info[0];
+        $height = $info[1];
+
+        if ($width != $newWidth || $height != $newHeight) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
